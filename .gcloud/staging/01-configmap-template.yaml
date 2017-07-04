@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: drone
+  namespace: staging
+data:
+  drone.open: 'true'
+  drone.orgs: 'Org'
+  drone.admin: 'user1,user2'
+  drone.host: 'https://host.server.com'
+  drone.github: 'true'
+  drone.server: 'drone:9000'
+  docker.api.version: '1.23'

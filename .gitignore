@@ -1,0 +1,2 @@
+.gcloud/staging/01-configmap.yaml
+.gcloud/staging/02-secret.yaml

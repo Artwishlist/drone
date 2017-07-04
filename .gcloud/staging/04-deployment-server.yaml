@@ -1,0 +1,81 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: drone-server
+  namespace: staging
+spec:
+  replicas: 1 # tells deployment to run 1 pod matching the template
+  minReadySeconds: 20
+  template: # create pods using pod definition in this template
+    metadata:
+      # unlike pod-nginx.yaml, the name is not included in the meta data as a unique name is
+      # generated from the deployment name
+      labels:
+        app: drone-server
+    spec:
+      containers:
+      - name: drone-server
+        image: drone/drone:latest
+        imagePullPolicy: Always
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8000
+        env:
+        - name: DRONE_OPEN
+          valueFrom:
+            configMapKeyRef:
+              name: drone
+              key: drone.open
+        - name: DRONE_ORGS
+          valueFrom:
+            configMapKeyRef:
+              name: drone
+              key: drone.orgs
+        - name: DRONE_ADMIN
+          valueFrom:
+            configMapKeyRef:
+              name: drone
+              key: drone.admin
+        - name: DRONE_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: drone
+              key: drone.host
+        - name: DRONE_GITHUB
+          valueFrom:
+            configMapKeyRef:
+              name: drone
+              key: drone.github
+        - name: DRONE_GITHUB_CLIENT
+          valueFrom:
+            secretKeyRef:
+              name: drone
+              key: DRONE_GITHUB_CLIENT
+        - name: DRONE_GITHUB_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: drone
+              key: DRONE_GITHUB_SECRET
+        - name: DRONE_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: drone
+              key: DRONE_SECRET
+        ports:
+        - containerPort: 8000
+        volumeMounts:
+          # Persist our configs in an SQLite DB in here
+          - mountPath: /var/lib/drone
+            name: drone-server-sqlite-db
+          # Enables Docker in Docker
+          - mountPath: /var/run/docker.sock
+            name: docker-socket
+      volumes:
+        - name: drone-server-sqlite-db
+          gcePersistentDisk:
+            pdName: drone-server-sqlite-db
+            fsType: ext4
+        - name: docker-socket
+          hostPath:
+            path: /var/run/docker.sock

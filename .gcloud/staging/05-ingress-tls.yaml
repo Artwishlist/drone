@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: drone
+  namespace: staging
+  annotations:
+    kubernetes.io/tls-acme: "true"
+    kubernetes.io/ingress.class: "gce"
+spec:
+  tls:
+  - hosts:
+    - host.server.com
+    secretName: drone-tls
+  rules:
+  - host: host.server.com
+    http:
+      paths:
+      - path: /*
+        backend:
+          serviceName: drone
+          servicePort: 80

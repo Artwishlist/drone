@@ -1,0 +1,43 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: drone-agent
+  namespace: staging
+spec:
+  replicas: 1 # tells deployment to run 1 pod matching the template
+  minReadySeconds: 20
+  template: # create pods using pod definition in this template
+    metadata:
+      # unlike pod-nginx.yaml, the name is not included in the meta data as a unique name is
+      # generated from the deployment name
+      labels:
+        app: drone-agent
+    spec:
+      containers:
+      - name: drone-agent
+        image: drone/agent:latest
+        imagePullPolicy: Always
+        env:
+        - name: DRONE_SERVER
+          valueFrom:
+            configMapKeyRef:
+              name: drone
+              key: drone.server
+        - name: DOCKER_API_VERSION
+          valueFrom:
+            configMapKeyRef:
+              name: drone
+              key: docker.api.version
+        - name: DRONE_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: drone
+              key: DRONE_SECRET
+        volumeMounts:
+          # Enables Docker in Docker
+          - mountPath: /var/run/docker.sock
+            name: docker-socket
+      volumes:
+        - name: docker-socket
+          hostPath:
+            path: /var/run/docker.sock
