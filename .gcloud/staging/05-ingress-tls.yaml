@@ -9,13 +9,13 @@ metadata:
 spec:
   tls:
   - hosts:
-    - host.server.com
+    - staging-drone.theartwishlist.com
     secretName: drone-tls
   rules:
-  - host: host.server.com
+  - host: staging-drone.theartwishlist.com
     http:
       paths:
       - path: /*
         backend:
-          serviceName: drone
+          serviceName: drone-ui
           servicePort: 80
