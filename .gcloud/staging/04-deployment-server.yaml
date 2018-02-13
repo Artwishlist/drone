@@ -47,6 +47,11 @@ spec:
             configMapKeyRef:
               name: drone
               key: drone.github
+        - name: DRONE_GITHUB_MERGE_REF
+          valueFrom:
+            configMapKeyRef:
+              name: drone
+              key: drone.github.merge.ref
         - name: DRONE_GITHUB_CLIENT
           valueFrom:
             secretKeyRef:

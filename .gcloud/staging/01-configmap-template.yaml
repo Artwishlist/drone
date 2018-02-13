@@ -11,3 +11,4 @@ data:
   drone.github: 'true'
   drone.server: 'drone:9000'
   docker.api.version: '1.23'
+  drone.github.merge.ref: 'true'
